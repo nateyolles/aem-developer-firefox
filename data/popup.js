@@ -1,6 +1,3 @@
-
-
-
 /** @global */
 var app = angular.module('PopupApp', ['ngStorage']),
     UI_MAP_CLASSIC = 'classic',
@@ -359,6 +356,17 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
     window.close();
   };
 
+  /**
+   * Run initial method on Background page to insert static assets and
+   * set function as the listener which acts as a pseudo callback
+   * function.
+   *
+   * The method accepts a response message from the tab with the following
+   * properties:
+   *  - type: the name of the response
+   *  - status: 'fail' or 'success'
+   *  - data: JSON data
+   */
   addon.port.on('message', function(tab){
     if (tab && tab.type) {
       switch(tab.type){
@@ -468,149 +476,9 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
       }
     }
   });
-  /**
-   * Get the Background page which will insert static assets and allow connection
-   * with the content page.
-   */
-//   chrome.runtime.getBackgroundPage(function(eventPage) {
-
-//     /** The background page. */
-//     cachedEventPage = eventPage;
-
-//     /**
-//      * Run initial method on Background page to insert static assets and
-//      * set function as the listener which acts as a pseudo callback
-//      * function.
-//      *
-//      * The method accepts a response message from the tab with the following
-//      * properties:
-//      *  - type: the name of the response
-//      *  - status: 'fail' or 'success'
-//      *  - data: JSON data
-//      */
-//     eventPage.AemBackgroundScripts.initialize(function(tab){
-//       if (tab && tab.type) {
-//         switch(tab.type){
-//           case 'window':
-//             if (tab.data) {
-//               $scope.pageDetails = tab.data;
-//               $scope.pageDetails.location = normalizeLocation($scope.pageDetails.location);
-//             }
-//             break;
-//           case 'user':
-//             if (tab.data) {
-//               $scope.$apply(function(){
-//                 $scope.user.name = tab.data.name_xss;
-//                 $scope.user.authorizableId = tab.data.authorizableId_xss;
-//                 $scope.user.isImpersonated = tab.data.isImpersonated;
-//                 $scope.user.home = tab.data.home;
-//                 $scope.isAuthenticated = true;
-//               });
-//             }
-//             break;
-//           case 'product':
-//             if (tab.data) {
-//               $scope.$apply(function(){
-//                 $scope.product.version = tab.data.version;
-//               });
-//             }
-//             break;
-//           case 'hotfixes':
-//             if (tab.data) {
-//               $scope.$apply(function(){
-//                 $scope.product.hotfixes = tab.data;
-//               });
-//             }
-//             break;
-//           case 'sling':
-//             if (tab.data) {
-//               $scope.$apply(function(){
-//                 var slingInfo = convertSlingArrayToObject(tab.data);
-//                 $scope.sling.runModes = slingInfo['Run Modes'];
-//               });
-//             }
-//             break;
-//           case 'system':
-//             if (tab.data) {
-//               $scope.$apply(function(){
-//                 var systemInfo = convertSlingArrayToObject(tab.data);
-
-//                 $scope.system.java.version = systemInfo['java.runtime.version'];
-//                 $scope.system.java.runtime = systemInfo['java.runtime.name'];
-//                 $scope.system.java.vm = systemInfo['java.vm.name'];
-//                 $scope.system.os.version = systemInfo['os.version'];
-//                 $scope.system.os.name = systemInfo['os.name'];
-//                 $scope.system.os.arch = systemInfo['os.arch'];
-//                 $scope.system.os.dir = systemInfo['user.dir'];
-//               });
-//             }
-//             break;
-//           case 'clientlibs':
-//             showStatus($('#lnk_clearClientLibs'), tab.status);
-//             break;
-//           case 'compiled_jsps':
-//             showStatus($('#lnk_clearCompiledJSPs'), tab.status);
-//             break;
-//           case 'garbage_collector':
-//             showStatus($('#lnk_runGarbageCollector'), tab.status);
-//             break;
-//           case 'linkChecker':
-//             showStatus($('#lnk_clearLinkChecker'), tab.status);
-//             break;
-//           case 'activateTree':
-//             showStatus($('#lnk_activateTree'), tab.status);
-//             break;
-//           case 'activatePage':
-//             showStatus($('#lnk_activatePage'), tab.status);
-//             break;
-//           case 'deactivatePage':
-//             showStatus($('#lnk_deactivatePage'), tab.status);
-//             break;
-//           case 'logout':
-//             if (tab.status === 'fail') {
-//               showStatus($('#lnk_logOut'), tab.status);
-//             } else if (tab.status === 'success') {
-//               window.close();
-//             }
-//             break;
-//           case 'login':
-//            if (tab.status === 'fail') {
-//               showStatus($('#lnk_logIn'), tab.status);
-//             } else if (tab.status === 'success') {
-//               window.close();
-//             }
-//             break;
-//           case 'sudoables':
-//             $scope.$apply(function(){
-//               for (var x = 0; x < tab.data.authorizables.length; x++) {
-//                 $scope.sudoables.push(tab.data.authorizables[x].id);
-//               }  
-//             });
-//             break;
-//           case 'compare':
-//             if (tab.status === 'success') {
-//               window.close();
-//             } else {
-//               showStatus($('#compare_' + tab.data.index), tab.status);
-//             }
-//             break;
-//         }
-//       }
-//     });
-    
-//   });
-
 });
 
 window.addEventListener('load', function(evt) {
-
-  $('button').click(function(e){
-    var $this = $(this),
-        $btnGroup = $this.parents('.btn-group');
-
-    $btnGroup.find('button').removeClass('active');
-    $(this).addClass('active');
-  });
 
   $('.redirect').click(function(e){
     e.preventDefault();
