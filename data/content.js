@@ -2,7 +2,7 @@
  * Run a function with arguments passed in from popup via main.
  */
 self.port.on('message', function(data) {
-  window['AemDeveloper'][data.method](data.args);
+  window['AemDeveloper'][data.method].apply(null, data.args);
 });
 
 /**

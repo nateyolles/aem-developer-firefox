@@ -605,9 +605,8 @@ function openNewTab(url) {
 function executeContentPageScript(method, args) {
   addon.port.emit('message', {
     "method" : method,
-    "args" : arguments
+    "args" : args
   });
-  // addon.port.emit('message', Array.prototype.slice.call(arguments).toString());
 }
 
 /**
