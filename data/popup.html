@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html data-ng-app="PopupApp" data-ng-csp>
+    <head>
+        <title>AEM Developer</title>
+        <link rel="stylesheet" href="css/angular-csp.css" />
+        <link rel="stylesheet" href="css/popup.css" />
+        <link rel="stylesheet" href="css/icons.css" />
+    </head>
+    <body data-ng-controller="PopupController">
+        <div class="body">
+            <section>
+                <ul data-ng-click="collapseZ = !collapseZ; getInfo()">
+                    <li class="accordion clearfix">
+                        <h3>Info</h3>
+                        <i ng-class="{'icon-arrow-down': collapseZ, 'icon-arrow-right': !collapseZ}"></i>
+                    </li>
+                </ul>
+                <ul class="sublist info-list" data-ng-show="collapseZ">
+                    <li>
+                        User
+                        <span>
+                            <span data-ng-show="user.authorizableId" data-ng-bind="'(' + user.authorizableId + ')'" class="user-id"></span>
+                            <span data-ng-bind="user.name"></span>
+                        </span>
+                    </li>
+                    <li>
+                        AEM version
+                        <span data-ng-bind="product.version"></span>
+                    </li>
+                    <li>
+                        AEM hot fixes
+                        <span data-ng-bind="product.hotfixes"></span>
+                    </li>
+                    <li>
+                        Sling run modes
+                        <span data-ng-bind="sling.runModes"></span>
+                    </li>
+                    <li>
+                        Java version
+                        <span data-ng-bind="system.java.version"></span>
+                    </li>
+                    <li>
+                        Java runtime
+                        <span data-ng-bind="system.java.runtime"></span>
+                    </li>
+                    <li>
+                        Java VM
+                        <span data-ng-bind="system.java.vm"></span>
+                    </li>
+                    <li>
+                        OS
+                        <span data-ng-bind="system.os.name"></span>
+                    </li>
+                    <li>
+                        OS version
+                        <span data-ng-bind="system.os.version"></span>
+                    </li>
+                    <li>
+                        OS architecture
+                        <span data-ng-bind="system.os.arch"></span>
+                    </li>
+                    <li>
+                        OS directory
+                        <span data-ng-bind="system.os.dir"></span>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <ul>
+                    <li class="clearfix">
+                        <h3>WCM Mode</h3>
+                        <div class="content">
+                            <div class="btn-group">
+                                <button class="querystring" data-querystring-key="wcmmode" data-querystring-value="disabled">Disabled</button>
+                                <button class="querystring" data-querystring-key="wcmmode" data-querystring-value="edit">Edit</button>
+                                <button class="querystring" data-querystring-key="wcmmode" data-querystring-value="design">Design</button>
+                                <button class="querystring" data-querystring-key="wcmmode" data-querystring-value="preview">Preview</button>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <ul>
+                    <li class="clearfix">
+                        <h3>Toggle UI</h3>
+                        <div class="content">
+                            <div class="btn-group">
+                                <button data-ng-click="openCRXDE(true)">CRXDE Lite</button>
+                            </div>
+                            <div class="btn-group">
+                                <button data-ng-click="toggleContentFinder()">Content Finder</button>
+                            </div>
+                            <div class="btn-group">
+                                <button data-ng-click="toggleUI()">Classic/Touch</button>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <ul data-ng-click="collapseC = !collapseC">
+                    <li class="accordion clearfix">
+                        <h3>Authentication</h3>
+                        <i ng-class="{'icon-arrow-down': collapseC, 'icon-arrow-right': !collapseC}"></i>
+                    </li>
+                </ul>
+                <ul class="sublist authentication" data-ng-show="collapseC">
+                    <li><h5>User</h5>
+                        <div class="authentication-container">
+                            <form>
+                                <input type="text" data-ng-model="auth.user" placeholder="Name">
+                                <input type="password" data-ng-model="auth.pass" placeholder="Password">
+                                <div class="btn-group">
+                                    <button id="lnk_logIn" data-ng-click="logIn()">Log in</button>
+                                </div>
+                            </form>
+                            <div class="btn-group" data-ng-show="isAuthenticated">
+                                <button id="lnk_logOut" data-ng-click="logOut()">Log out</button>
+                            </div>
+                        </div>
+                    </li>
+                    <li data-ng-show="isAuthenticated">
+                        <h5>Impersonate</h5>
+                        <div class="pull-right">
+                            <div class="btn-group">
+                                <button data-ng-show="user.isImpersonated" data-ng-click="revertToSelf()">Revert to self</button>
+                            </div>
+                            <select data-ng-model="user.authorizableId" data-ng-change="impersonate(user.authorizableId)" id="sudoables">
+                                <option data-ng-repeat="sudoable in sudoables track by $index" value="{{sudoable}}" data-ng-bind="sudoable"></option>
+                            </select>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <ul data-ng-click="collapseA = !collapseA">
+                    <li class="accordion clearfix">
+                        <h3>Environments</h3>
+                        <i ng-class="{'icon-arrow-down': collapseA, 'icon-arrow-right': !collapseA}"></i>
+                    </li>
+                </ul>
+                <ul class="sublist environments" data-ng-show="collapseA">
+                    <li data-ng-repeat="server in options.servers" data-ng-show="editMode" class="input-container">
+                        <input placeholder="name" data-ng-model="server.name">
+                        <input placeholder="url" data-ng-model="server.url">
+                        <i data-ng-click="remove()" class="icon-minus"></i>
+                    </li>
+                    <li data-ng-show="editMode" class="input-container">
+                        <input placeholder="name" data-ng-model="newServer.name" required>
+                        <input placeholder="url" data-ng-model="newServer.url" required>
+                        <i data-ng-click="add()" class="icon-plus"></i>
+                    </li>
+                    <li data-ng-repeat="server in options.servers" data-ng-show="!editMode">
+                        <a href="" ng-click="redirectToEnvironment(false)" title="open same page in {{server.name}}" data-ng-bind="server.name"></a>
+                        <a href="" ng-click="redirectToEnvironment(true)" title="open same page in {{server.name}} in new window" class="new-window">
+                            <i class="icon-link-external"></i>
+                        </a>
+                        <div data-ng-show="showCompare()" class="btn-group compare-container">
+                            <button ng-click="compareToEnvironment(false)" id="compare_{{$index}}"><i class="icon-files-empty"></i> Compare</button>
+                        </div>
+                        <div data-ng-show="!showCompare()" class="btn-group compare-container">
+                            <button ng-click="compareToEnvironment(true)" id="compare_{{$index}}"><i class="icon-file-empty"></i> View</button>
+                        </div>
+                    </li>
+                    <li class="edit" data-ng-show="!editMode"><a data-ng-click="changeEditMode()" title="add, edit and remove servers">Edit <i class="icon-pencil"></i></a></li>
+                    <li class="edit" data-ng-show="editMode"><a data-ng-click="changeEditMode()" title="save servers">Done <i class="icon-disk"></i></a></li>
+                </ul>
+            </section>
+
+            <section>
+                <ul data-ng-click="collapseD = !collapseD">
+                    <li class="accordion clearfix">
+                        <h3>Activation</h3>
+                        <i ng-class="{'icon-arrow-down': collapseD, 'icon-arrow-right': !collapseD}"></i>
+                    </li>
+                </ul>
+                <ul class="sublist" data-ng-show="collapseD">
+                    <li><a id="lnk_activateTree" data-ng-click="activateTree()" href="">Activate tree</a></li>
+                    <li><a id="lnk_activatePage" data-ng-click="activatePage()" href="">Activate page</a></li>
+                    <li><a id="lnk_deactivatePage" data-ng-click="deactivatePage()" href="">Deactivate page</a></li>
+                </ul>
+            </section>
+
+            <section>
+                <ul data-ng-click="collapseB = !collapseB">
+                    <li class="accordion clearfix">
+                        <h3>Clear Caches</h3>
+                        <i ng-class="{'icon-arrow-down': collapseB, 'icon-arrow-right': !collapseB}"></i>
+                    </li>
+                </ul>
+                <ul class="sublist" data-ng-show="collapseB">
+                    <li><a id="lnk_clearClientLibs" data-ng-click="clearClientLibs()" href="">Delete cached clientlibs</a></li>
+                    <li><a id="lnk_clearCompiledJSPs" data-ng-click="clearCompiledJSPs()" href="">Delete compiled JSPs</a></li>
+                    <li><a id="lnk_clearLinkChecker" data-ng-click="clearLinkChecker()" href="">Delete Link Checker cache</a></li>
+                </ul>
+            </section>
+
+            <section>
+                <ul>
+                    <li class="clearfix">
+                        <h3>Toggle Debug</h3>
+                        <div class="content">
+                            <div class="btn-group">
+                                <button data-ng-click="toggleDebugLayout()">Debug Layout</button>
+                            </div>
+                            <div class="btn-group">
+                                <button data-ng-click="toggleDebugClientLibs()">Debug ClientLibs</button>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <ul>
+                    <li class="clearfix">
+                        <h3>Marketing Cloud Debugger</h3>
+                        <div class="content">
+                            <div class="btn-group">
+                                <button data-ng-click="openDigitalPulseDebugger()">Open</button>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="outer-section">
+                <div class="clearfix">
+                    <a href="" data-ng-click="collapseE = !collapseE" class="light pull-right">Help &amp; About <i data-ng-class="{'icon-info': !collapseE, 'icon-cross2': collapseE}"></i></a>
+                </div>
+                <div class="inner-section" data-ng-show="collapseE">
+                    <img class="pull-right" src="images/icon48.png">
+                    <h3>AEM Developer</h3>
+                    <p>This Chrome extension is meant to help AEM engineers, web developers, admins and authors on
+                    a daily basis. AEM Developer was written with AngularJS, does some basic string manipulation to
+                    alter the browser location, and makes AJAX calls to get information from the JCR and Felix
+                    console as well as to perform actions.</p>
+
+                    <p>This extension is completely agnostic to your AEM project, your instances and code. You must
+                    authenticate yourself into your AEM instance and/or Felix web console for certain functionality.</p>
+
+                    <p><span class="text-success">Green</span> signifies the operation was successful.</p>
+
+                    <p><span class="text-noaction">Yellow</span> signifies that operation was successful but no action was taken. For example, there were no compiled ClientLibs to delete.</p>
+
+                    <p><span class="text-fail">Red</span> signifies that the operation failed. For example, comparing pages to another environment
+                        that is unavailable.</p>
+
+                    <p>Clicking on an environment link will open the same page in that new environment. Clicking the <i class="icon-link-external"></i> icon
+                    will do the same but in a new Chrome tab.</p>
+
+                    <p>I'm currently the lead AEM Engineer at Adobe for the Acrobat.com and EchoSign.com marketing
+                    websites. I created this tool to speed up my daily workflow and hopefully help others in our
+                    community as well. It's a work in progress; I'd love to hear feedback and suggestions. Please
+                    let me know what you like and what you don't like about his extension. Feel free to report any
+                    bugs as well as feature requests.</p>
+
+                    <ul class="contact">
+                        <li><strong>Nate Yolles</strong></li>
+                        <li><i class="icon-twitter"></i> <a href="https://twitter.com/nateyolles" target="_blank">@nateyolles</a></li>
+                        <li><i class="icon-mail"></i> <a href="mailto:yolles@adobe.com" target="_blank">yolles@adobe.com</a></li>
+                        <li><i class="icon-linkedin"></i> <a href="http://www.linkedin.com/in/nateyolles/" target="_blank">linkedin.com/in/nateyolles</a></li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <script src="jquery.min.js"></script>
+        <script src="getqueryparameters.js"></script>
+        <script src="angular.min.js"></script>
+        <script src="ngStorage.min.js"></script>
+        <script src="popup.js"></script>
+    </body>
+</html>

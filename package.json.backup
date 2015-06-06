@@ -1,0 +1,25 @@
+{
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-contrib-nodeunit": "~0.4.1",
+    "grunt-shell": "~1.1.2",
+    "matchdep": "~0.3.0"
+  },
+  "name": "aem-developer-firefox",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "Gruntfile.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "author": "nate",
+  "license": "ISC"
+}
