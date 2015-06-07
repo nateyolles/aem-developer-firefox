@@ -1,25 +1,28 @@
 {
-    "license": "ISC", 
-    "name": "aem-developer-firefox", 
+    "license": "MIT",
+    "name": "aem-developer-firefox",
+    "title" : "AEM Developer",
     "engines": {
         "node": ">= 0.10.0"
     }, 
-    "author": "nate", 
+    "author": "Nate Yolles <yolles@adobe.com>",
+    "homepage": "https://github.com/nateyolles/aem-developer-firefox",
     "directories": {
         "test": "test"
     }, 
-    "version": "1.0.0", 
+    "version": "0.1.0",
     "scripts": {
         "test": "test"
     }, 
     "devDependencies": {
-        "grunt-contrib-nodeunit": "~0.4.1", 
-        "grunt-contrib-jshint": "~0.10.0", 
-        "grunt": "~0.4.5", 
-        "grunt-shell": "~1.1.2", 
-        "matchdep": "~0.3.0", 
+        "grunt-contrib-nodeunit": "~0.4.1",
+        "grunt-contrib-jshint": "~0.10.0",
+        "grunt": "~0.4.5",
+        "grunt-shell": "~1.1.2",
+        "matchdep": "~0.3.0",
         "grunt-contrib-watch": "~0.6.1"
     },
-    "id": "jid1-z7BYsgZY84ubbg", 
-    "description": "test"
+    "id": "jid1-z7BYsgZY84ubbg",
+    "description": "AEM/CQ tools for developers.",
+    "icon" : "data/images/icon48.png"
 }
