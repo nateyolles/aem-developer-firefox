@@ -160,12 +160,6 @@
                         <a href="" ng-click="redirectToEnvironment(true)" title="open same page in {{server.name}} in new window" class="new-window">
                             <i class="icon-link-external"></i>
                         </a>
-                        <!-- <div data-ng-show="showCompare()" class="btn-group compare-container">
-                            <button ng-click="compareToEnvironment(false)" id="compare_{{$index}}"><i class="icon-files-empty"></i> Compare</button>
-                        </div>
-                        <div data-ng-show="!showCompare()" class="btn-group compare-container">
-                            <button ng-click="compareToEnvironment(true)" id="compare_{{$index}}"><i class="icon-file-empty"></i> View</button>
-                        </div> -->
                     </li>
                     <li class="edit" data-ng-show="!editMode"><a data-ng-click="changeEditMode()" title="add, edit and remove servers">Edit <i class="icon-pencil"></i></a></li>
                     <li class="edit" data-ng-show="editMode"><a data-ng-click="changeEditMode()" title="save servers">Done <i class="icon-disk"></i></a></li>
@@ -216,27 +210,14 @@
                 </ul>
             </section>
 
-     <!--        <section>
-                <ul>
-                    <li class="clearfix">
-                        <h3>Marketing Cloud Debugger</h3>
-                        <div class="content">
-                            <div class="btn-group">
-                                <button data-ng-click="openDigitalPulseDebugger()">Open</button>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </section>
-
-    -->         <section class="outer-section">
+            <section class="outer-section">
                 <div class="clearfix">
                     <a href="" data-ng-click="collapseE = !collapseE" class="light pull-right">Help &amp; About <i data-ng-class="{'icon-info': !collapseE, 'icon-cross2': collapseE}"></i></a>
                 </div>
                 <div class="inner-section" data-ng-show="collapseE">
                     <img class="pull-right" src="images/icon48.png">
                     <h3>AEM Developer</h3>
-                    <p>This Chrome extension is meant to help AEM engineers, web developers, admins and authors on
+                    <p>This Firefox addon is meant to help AEM engineers, web developers, admins and authors on
                     a daily basis. AEM Developer was written with AngularJS, does some basic string manipulation to
                     alter the browser location, and makes AJAX calls to get information from the JCR and Felix
                     console as well as to perform actions.</p>
@@ -251,8 +232,7 @@
                     <p><span class="text-fail">Red</span> signifies that the operation failed. For example, comparing pages to another environment
                         that is unavailable.</p>
 
-                    <p>Clicking on an environment link will open the same page in that new environment. Clicking the <i class="icon-link-external"></i> icon
-                    will do the same but in a new Chrome tab.</p>
+                    <p>Clicking on an environment link will open the same page in that new environment. Clicking the <i class="icon-link-external"></i> icon will do the same but in a new tab.</p>
 
                     <p>I'm currently the lead AEM Engineer at Adobe for the Acrobat.com and EchoSign.com marketing
                     websites. I created this tool to speed up my daily workflow and hopefully help others in our

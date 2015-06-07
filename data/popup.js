@@ -135,7 +135,7 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
    * When user clicks "Save/Done", first save the new fields, then change edit mode.
    */
   $scope.changeEditMode = function() {
-    if (!$scope.newServer.name.isEmpty() && !$scope.newServer.url.isEmpty()) {
+    if (!isEmpty($scope.newServer.name) && !isEmpty($scope.newServer.url)) {
       $scope.add();
     }
 
@@ -175,39 +175,6 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
 
     $scope.resetPanel();
   }
-
-  /**
-   * Show comparison link if the target origin isn't the same as the current origin.
-   *
-   * @returns {Boolean} true if target origin isn't the same as the current origin.  
-   */
-  $scope.showCompare = function(){
-    var newOrigin = $scope.options.servers[this.$index].url;
-
-    newOrigin = removeTrailingSlash(newOrigin);
-
-    if ($scope.pageDetails && $scope.pageDetails.location) {
-      return newOrigin !== $scope.pageDetails.location.origin;
-    }
-
-    return false;
-  }
-
-  /**
-   * Compare current page to same page on target origin.
-   *
-   * @param {Boolean} true to view current page without comparing.
-   */
-  $scope.compareToEnvironment = function(isSelfView) {
-    var target = '';
-
-    if (!isSelfView) {
-      target = $scope.options.servers[this.$index].url;
-      target = removeTrailingSlash(target);
-    }
-
-    executeContentPageScript('comparePage', [target, this.$index]);
-  };
 
   /**
    * Redirect current page to same page on target origin.
@@ -625,25 +592,14 @@ function executeContentPageScript(method, args) {
 }
 
 /**
- * isEmpty added to global String object.
+ * Checks if string is not "" or " ".
  *
+ * @param {String} The string to check.
  * @returns {boolean} If String object is not "" or " ".
  */
-String.prototype.isEmpty = function() {
-  return (this.length === 0 || !this.trim());
+function isEmpty(str) {
+  return str !== null && (str.length === 0 || !str.trim());
 };
-
-/**
- * endsWith added to global String object.
- * 
- * @param {String} suffix to check if string ends with.
- * @returns {boolean} If String object ends with suffix.
- */
-if (typeof String.prototype.endsWith !== 'function') {
-  String.prototype.endsWith = function(suffix) {
-    return this.indexOf(suffix, this.length - suffix.length) !== -1;
-  };
-}
 
 /**
  * Remove trailing slash
