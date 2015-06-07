@@ -283,7 +283,7 @@ var AemDeveloper = (function(window, undefined) {
    * @param {String} pathname
    */
   function activateTree(pathname) {
-    post('activateTree', ACTIVATE_TREE, 'cmd=activate&ignoredeactivated=false&onlymodified=false&path=' + pathname + '&_charset_=utf-8');
+    post('activateTree', ACTIVATE_TREE, 'cmd=activate&ignoredeactivated=false&onlymodified=false&path=' + encodeURIComponent(pathname) + '&_charset_=utf-8');
   }
 
   /**
