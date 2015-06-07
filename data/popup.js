@@ -107,6 +107,21 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
     }
   });
 
+
+  /**
+   * Remove last input and close all accordion panes.
+   */
+  $scope.resetPanel = function() {
+    $scope.auth.user = '';
+    $scope.auth.pass = '';
+    $scope.collapseA = false;
+    $scope.collapseB = false;
+    $scope.collapseC = false;
+    $scope.collapseD = false;
+    $scope.collapseE = false;
+    $scope.collapseZ = false;
+  };
+
   /**
    * Get all Sling, Java, and OS information except the current user. 
    */
@@ -149,7 +164,7 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
   $scope.toggleUI = function() {
     toggleUI($scope.currentUI, $scope.pageDetails.location);  
 
-    window.close();
+    $scope.resetPanel();
   };
 
   /**
@@ -158,7 +173,7 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
   $scope.toggleContentFinder = function() {
     toggleContentFinder($scope.pageDetails.location);
 
-    window.close();
+    $scope.resetPanel();
   }
 
   /**
@@ -212,7 +227,7 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
     } else {
       setTabLocation(newUrl);
     }
-    window.close();
+    $scope.resetPanel();
   };
 
   /**
@@ -223,7 +238,7 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
         location = getUrlWithUpdatedQueryString(location, SUDOABLE_USER_PARAM_KEY, selectedSudoable);
 
     setTabLocation(location);
-    window.close();
+    $scope.resetPanel();
   };
 
   /**
@@ -234,7 +249,7 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
         location = getUrlWithUpdatedQueryString(location, SUDOABLE_USER_PARAM_KEY, SUDOABLE_REVERT_PARAM_VALUE);
 
     setTabLocation(location);
-    window.close();
+    $scope.resetPanel();
   };
 
   /**
@@ -242,6 +257,7 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
    */
   $scope.logOut = function() {
     executeContentPageScript('logOut');
+    $scope.resetPanel();
   };
 
   /**
@@ -301,7 +317,7 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
    */
   $scope.openDigitalPulseDebugger = function() {
     executeContentPageScript('openDigitalPulseDebugger');
-    window.close();
+    $scope.resetPanel();
   };
 
   /**
@@ -353,7 +369,7 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
       setTabLocation(newUrl);
     }
 
-    window.close();
+    $scope.resetPanel();
   };
 
   /**
@@ -449,14 +465,14 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
           if (tab.status === 'fail') {
             showStatus($('#lnk_logOut'), tab.status);
           } else if (tab.status === 'success') {
-            window.close();
+            $scope.resetPanel();
           }
           break;
         case 'login':
          if (tab.status === 'fail') {
             showStatus($('#lnk_logIn'), tab.status);
           } else if (tab.status === 'success') {
-            window.close();
+            $scope.resetPanel();
           }
           break;
         case 'sudoables':
@@ -468,7 +484,7 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
           break;
         case 'compare':
           if (tab.status === 'success') {
-            window.close();
+            $scope.resetPanel();
           } else {
             showStatus($('#compare_' + tab.data.index), tab.status);
           }
@@ -483,7 +499,7 @@ window.addEventListener('load', function(evt) {
   $('.redirect').click(function(e){
     e.preventDefault();
     setTabLocation(pageDetails.location.origin + $(this).attr('data-link'));
-    window.close();
+    $scope.resetPanel();
   });
 
   $('.querystring').click(function(e){
@@ -495,7 +511,7 @@ window.addEventListener('load', function(evt) {
 
     setTabLocation(getUrlWithUpdatedQueryString(pageDetails.location, key, value));
 
-    window.close();
+    $scope.resetPanel();
   });
 });
 
@@ -884,7 +900,7 @@ function toggleQueryStringParam(location, querystringParam, onValue, offValue) {
     setTabLocation(getUrlWithUpdatedQueryString(location, querystringParam, onValue));
   }
 
-  window.close();
+  $scope.resetPanel();
 }
 
 var _gaq = _gaq || [];
