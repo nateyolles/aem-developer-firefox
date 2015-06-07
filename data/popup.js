@@ -575,8 +575,7 @@ function getUrlWithUpdatedQueryString(location, key, value, returnLocationObject
  * @Param {Object} Response message
  */
 function showStatus(target, response) {
-  var color,
-      $container = $(target).parents('li');
+  var $container = $(target).parents('li');
 
   $container.addClass(response);
   setTimeout(function(){
