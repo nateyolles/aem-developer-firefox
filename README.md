@@ -3,6 +3,8 @@ aem-developer-firefox
 
 Firefox addon for AEM developers.
 
+[Download the addon from Mozilla](https://addons.mozilla.org/en-US/firefox/addon/aem-developer/)
+
 A collection of tools and links to help the daily AEM developer work a little faster. It's a work in progress. Please feel free to provide feedback on my little side project.
 
 The project is based on the Chrome extension of the same name [https://github.com/nateyolles/aem-developer-chrome](https://github.com/nateyolles/aem-developer-chrome). Resources such as Photoshop files and icomoon sources will remain in the Chrome project. Ideally the two projects can merge with one build script to create both distributions.
