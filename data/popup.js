@@ -177,6 +177,39 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
   }
 
   /**
+   * Show comparison link if the target origin isn't the same as the current origin.
+   *
+   * @returns {Boolean} true if target origin isn't the same as the current origin.  
+   */
+  $scope.showCompare = function(){
+    var newOrigin = $scope.options.servers[this.$index].url;
+
+    newOrigin = removeTrailingSlash(newOrigin);
+
+    if ($scope.pageDetails && $scope.pageDetails.location) {
+      return newOrigin !== $scope.pageDetails.location.origin;
+    }
+
+    return false;
+  }
+
+  /**
+   * Compare current page to same page on target origin.
+   *
+   * @param {Boolean} true to view current page without comparing.
+   */
+  $scope.compareToEnvironment = function(isSelfView) {
+    var target = '';
+
+    if (!isSelfView) {
+      target = $scope.options.servers[this.$index].url;
+      target = removeTrailingSlash(target);
+    }
+
+    executeContentPageScript('comparePage', [target, this.$index]);
+  };
+
+  /**
    * Redirect current page to same page on target origin.
    *
    * @param {Boolean} open page in new broswer window/tab.

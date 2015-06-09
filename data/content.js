@@ -726,6 +726,7 @@ var AemDeveloper = (function(window, undefined) {
     clearLinkChecker : clearLinkChecker,
     getUserInfo: getUserInfo,
     getAllInfo : getAllInfo,
+    comparePage : comparePage,
     getWindowInfo : getWindowInfo,
     logOut : logOut,
     logIn : logIn,
