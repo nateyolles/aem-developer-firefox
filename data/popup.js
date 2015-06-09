@@ -135,7 +135,7 @@ app.controller('PopupController', function($scope, $localStorage, $http) {
    * When user clicks "Save/Done", first save the new fields, then change edit mode.
    */
   $scope.changeEditMode = function() {
-    if (!$scope.newServer.name.isEmpty() && !$scope.newServer.url.isEmpty()) {
+    if (!isEmpty($scope.newServer.name) && !isEmpty($scope.newServer.url)) {
       $scope.add();
     }
 
@@ -625,25 +625,14 @@ function executeContentPageScript(method, args) {
 }
 
 /**
- * isEmpty added to global String object.
+ * Checks if string is not "" or " ".
  *
+ * @param {String} The string to check.
  * @returns {boolean} If String object is not "" or " ".
  */
-String.prototype.isEmpty = function() {
-  return (this.length === 0 || !this.trim());
+function isEmpty(str) {
+  return str !== null && (str.length === 0 || !str.trim());
 };
-
-/**
- * endsWith added to global String object.
- * 
- * @param {String} suffix to check if string ends with.
- * @returns {boolean} If String object ends with suffix.
- */
-if (typeof String.prototype.endsWith !== 'function') {
-  String.prototype.endsWith = function(suffix) {
-    return this.indexOf(suffix, this.length - suffix.length) !== -1;
-  };
-}
 
 /**
  * Remove trailing slash

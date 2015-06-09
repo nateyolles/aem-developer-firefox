@@ -502,7 +502,6 @@ var AemDeveloper = (function(window, undefined) {
         left = document.createElement('span'),
         right = document.createElement('span'),
         container = document.createElement('div'),
-        root = container.createShadowRoot();
         isShowingAll = false,
         isSelfView = !compareToOrigin;
 
@@ -561,7 +560,7 @@ var AemDeveloper = (function(window, undefined) {
 
     container.id = COMPARE_CONTAINER_NAME;
 
-    root.appendChild(visualdiff);
+    container.appendChild(visualdiff);
 
     insertionPoint.appendChild(container);
   }
@@ -681,6 +680,8 @@ var AemDeveloper = (function(window, undefined) {
                     type: 'compare',
                     status: 'success'
                   });
+
+                  closePanel();
                 } else {
                   // AJAX successful but no differences found
                   sendMessage({
