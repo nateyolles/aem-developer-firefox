@@ -415,6 +415,157 @@ var AemDeveloper = (function(window, undefined) {
   }
 
   /**
+   * Escape HTML String. Not to be used for XSS protection.
+   *
+   * @private
+   * @param {String} String to escape.
+   * @returns {String} Escaped string.
+   */
+  function escapeHTML(str) {
+    var div = document.createElement('div'),
+        text = document.createTextNode(str);
+
+    div.appendChild(text);
+    return div.innerHTML;
+  }
+
+  /**
+   * Remove provided keys from JSON objects.
+   *
+   * @private 
+   * @param {JSON} JSON object.
+   * @param {String[]} Array of Strings to remove from JSON object.
+   */
+  function scrubJson(obj, propertiesToRemove) {
+    for (key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        if (propertiesToRemove.indexOf(key) !== -1) {
+          delete obj[key];
+        } else if (typeof obj[key] === 'object') {
+          scrubJson(obj[key], propertiesToRemove);
+        } else {
+          obj[key] = escapeHTML(obj[key]);
+        }
+      }
+    }
+  }
+
+  /**
+   * Get the difference between two JSON objects in jsondiffpatch HTML format.
+   *
+   * @private
+   * @param {JSON} JSON object to be compared against
+   * @param {JSON} JSON object to be compared with
+   * @returns {String} The delta of the two JSON objects formatted in HTML.
+   * @see {@link https://github.com/benjamine/jsondiffpatch/blob/master/docs/formatters.md} for further information.
+   * @requires {@link https://github.com/benjamine/jsondiffpatch}
+   */
+  function getDifferenceHtml(currentJson, compareJson) {
+    var instance = jsondiffpatch.create({
+      objectHash: function(obj) {
+        return obj.name;
+      }
+    });
+
+    var propertiesToRemove = ['jcr:createdBy', 'cq:lastModified', 'cq:lastModifiedBy',
+                              'jcr:created', 'jcr:lastModified', 'jcr:lastModifiedBy',
+                              'jcr:baseVersion', 'jcr:isCheckedOut', 'jcr:predecessors',
+                              'jcr:uuid', 'jcr:versionHistory', 'cq:lastReplicated'];
+
+    scrubJson(currentJson, propertiesToRemove);
+    scrubJson(compareJson, propertiesToRemove);
+
+    var delta = instance.diff(compareJson, currentJson);
+
+    return jsondiffpatch.formatters.html.format(delta, compareJson);
+  }
+
+  /**
+   * Create and add differential HTML to the page.
+   *
+   * @private
+   * @param {HTMLElement} The DOM node to attach the Shadow DOM and HTML difference to.
+   * @param {String} HTML difference to insert into page.
+   * @param {String} The current origin to compare against (e.g. 'http://localhost:4502').
+   * @param {String} The origin to compare with (e.g. 'http://localhost:4503').
+   * @param {String} The path of the page to compare (e.g '/content/project/en_us/about.html). 
+   * @see {@link https://github.com/benjamine/jsondiffpatch/blob/master/docs/formatters.md} for further information.
+   * @requires {@link https://github.com/benjamine/jsondiffpatch}
+   */
+  function createDifferenceHtml(insertionPoint, html, origin, compareToOrigin, path) {
+    var visualdiff = document.createElement('div'),
+        diffToggle = document.createElement('a'),
+        titleSpan = document.createElement('span'),
+        close = document.createElement('a'),
+        titleBar = document.createElement('div'),
+        compareBar = document.createElement('div'),
+        left = document.createElement('span'),
+        right = document.createElement('span'),
+        container = document.createElement('div'),
+        isShowingAll = false,
+        isSelfView = !compareToOrigin;
+
+    titleSpan.innerHTML = isSelfView ? VIEW_TEXT : COMPARE_TEXT;
+    titleSpan.className = TITLE_CLASS_NAME;
+
+    close.href = '#';
+    close.className = CLOSE_CLASS_NAME;
+    close.title = CLOSE_TITLE_TEXT;
+    close.onclick = function(evt){
+      container.parentElement.removeChild(container);
+      evt.preventDefault();
+    };
+
+    diffToggle.href = '#';
+    diffToggle.innerHTML = TOGGLE_SHOW_ALL_TEXT;
+    diffToggle.className = TOGGLE_CLASS_NAME;
+    diffToggle.onclick = function(evt){
+      if (isShowingAll) {
+        jsondiffpatch.formatters.html.hideUnchanged(visualdiff);
+        diffToggle.innerHTML = TOGGLE_SHOW_ALL_TEXT;
+      } else {
+        jsondiffpatch.formatters.html.showUnchanged(true, visualdiff);
+        diffToggle.innerHTML = TOGGLE_HIDE_ALL_TEXT;
+      }
+
+      isShowingAll = !isShowingAll;
+      evt.preventDefault();
+    };
+
+    titleBar.className = TITLE_BAR_CLASS_NAME;
+    titleBar.appendChild(titleSpan);
+
+    if (!isSelfView) {
+      titleBar.appendChild(diffToggle);
+    }
+
+    titleBar.appendChild(close);
+
+    left.innerHTML = '<span class="origin">' + origin + '</span>' + path;
+    right.innerHTML = '<span class="origin">' + compareToOrigin + '</span>' + path;
+
+    compareBar.className = COMPARE_BAR_CLASS_NAME;
+    compareBar.appendChild(left);
+
+    if (!isSelfView) {
+      compareBar.appendChild(right);
+    }
+
+    visualdiff.innerHTML = html;
+    visualdiff.className = isSelfView ? CONTAINER_CLASS_NAME + ' ' + SELF_VIEW_CLASS_NAME : CONTAINER_CLASS_NAME;
+    visualdiff.appendChild(titleBar);
+    visualdiff.appendChild(compareBar);
+
+    jsondiffpatch.formatters.html.hideUnchanged(visualdiff);
+
+    container.id = COMPARE_CONTAINER_NAME;
+
+    container.appendChild(visualdiff);
+
+    insertionPoint.appendChild(container);
+  }
+
+  /**
    * Gets location object without the content finder.
    *
    * @private
@@ -462,6 +613,107 @@ var AemDeveloper = (function(window, undefined) {
     pathname = pathname.replace(HTML_EXTENSION, JSON_EXTENSION);
 
     return pathname;
+  }
+
+  /**
+   * Compare page to the same page on a given domain.
+   *
+   * @param {String} Domain to compare current page to (e.g. 'http://localhost:4503'). 
+   * @param {Number} Index of compare link clicked.
+   */
+  function comparePage(compareToOrigin, index) {
+    var isSelfView = !compareToOrigin,
+        location = getNormalizedLocation(),
+        path = getPathnameForJcrAjaxCall(location.pathname);
+
+    var sendFail = function() {
+      sendMessage({
+        type: 'compare',
+        status: 'fail',
+        data: {
+          index: index
+        }
+      });
+    };
+
+    // TEMP: if self view only do one request to current page
+    if (isSelfView) {
+      compareToOrigin = location.origin;
+    }
+
+    var comparePageRequest = new XMLHttpRequest();
+
+    comparePageRequest.onreadystatechange = function() {
+      if (comparePageRequest.readyState === 4) {
+        if (comparePageRequest.status === 200) {
+          var currentPageRequest = new XMLHttpRequest();
+          currentPageRequest.responseType = 'json';
+          currentPageRequest.open('GET', location.origin + path);
+
+          currentPageRequest.onreadystatechange = function() {
+            if (currentPageRequest.readyState === 4) {
+              if (currentPageRequest.status === 200) {
+                var html,
+                    body,
+                    oldContainer;
+
+                if (isSelfView) {
+                  html = getDifferenceHtml(currentPageRequest.response, {});
+                } else {
+                  html = getDifferenceHtml(currentPageRequest.response, comparePageRequest.response);
+                }
+
+                if (html) {
+                  // difference found
+                  body = document.querySelector('body'),
+                  oldContainer = document.getElementById(COMPARE_CONTAINER_NAME);
+
+                  if (oldContainer) {
+                    body.removeChild(oldContainer);
+                  }
+
+                  // TEMP: if self view only do one request to current page
+                  if (isSelfView) { compareToOrigin = ''}
+                  createDifferenceHtml(body, html, location.origin, compareToOrigin, path);
+
+                  sendMessage({
+                    type: 'compare',
+                    status: 'success'
+                  });
+
+                  closePanel();
+                } else {
+                  // AJAX successful but no differences found
+                  sendMessage({
+                    type: 'compare',
+                    status: 'noaction',
+                    data: {
+                      index: index
+                    }
+                  });
+                }
+              } else {
+                sendFail();
+              }
+            }
+          };
+
+          currentPageRequest.send();
+        } else {
+          sendFail();
+        }
+      }
+    };
+
+    comparePageRequest.responseType = 'json';
+    comparePageRequest.open('GET', compareToOrigin + path);
+    comparePageRequest.setRequestHeader('Access-Control-Allow-Origin', '*');
+    comparePageRequest.timeout = 2000;
+    comparePageRequest.ontimeout = function() {
+      sendFail();
+    };
+
+    comparePageRequest.send();
   }
 
   /**

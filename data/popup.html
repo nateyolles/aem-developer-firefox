@@ -160,6 +160,9 @@
                         <a href="" ng-click="redirectToEnvironment(true)" title="open same page in {{server.name}} in new window" class="new-window">
                             <i class="icon-link-external"></i>
                         </a>
+                        <div data-ng-show="!showCompare()" class="btn-group compare-container">
+                            <button ng-click="compareToEnvironment(true)" id="compare_{{$index}}"><i class="icon-file-empty"></i> View</button>
+                        </div>
                     </li>
                     <li class="edit" data-ng-show="!editMode"><a data-ng-click="changeEditMode()" title="add, edit and remove servers">Edit <i class="icon-pencil"></i></a></li>
                     <li class="edit" data-ng-show="editMode"><a data-ng-click="changeEditMode()" title="save servers">Done <i class="icon-disk"></i></a></li>
@@ -217,7 +220,7 @@
                 <div class="inner-section" data-ng-show="collapseE">
                     <img class="pull-right" src="images/icon48.png">
                     <h3>AEM Developer</h3>
-                    <p>This Firefox addon is meant to help AEM engineers, web developers, admins and authors on
+                    <p>This Firefox extension is meant to help AEM engineers, web developers, admins and authors on
                     a daily basis. AEM Developer was written with AngularJS, does some basic string manipulation to
                     alter the browser location, and makes AJAX calls to get information from the JCR and Felix
                     console as well as to perform actions.</p>
@@ -229,8 +232,7 @@
 
                     <p><span class="text-noaction">Yellow</span> signifies that operation was successful but no action was taken. For example, there were no compiled ClientLibs to delete.</p>
 
-                    <p><span class="text-fail">Red</span> signifies that the operation failed. For example, comparing pages to another environment
-                        that is unavailable.</p>
+                    <p><span class="text-fail">Red</span> signifies that the operation failed. For example, comparing pages to another environment that is unavailable.</p>
 
                     <p>Clicking on an environment link will open the same page in that new environment. Clicking the <i class="icon-link-external"></i> icon will do the same but in a new tab.</p>
 
